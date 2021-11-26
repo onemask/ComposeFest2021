@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.codelabs.state.util.generateRandomTodoItem
@@ -53,60 +55,89 @@ import kotlin.random.Random
 @Composable
 fun TodoScreen(
   items: List<TodoItem>,
+  currentlyEditing: TodoItem?,
   onAddItem: (TodoItem) -> Unit,
   onRemoveItem: (TodoItem) -> Unit,
+  onStartEdit: (TodoItem) -> Unit,
+  onEditItemChange: (TodoItem) -> Unit,
+  onEditDone: () -> Unit,
 ) {
   Column {
-    TodoItemInputBackground(elevate = true, modifier = Modifier.fillMaxWidth()) {
-      val (text, setText) = remember { mutableStateOf("") }
-      Column {
-        Row(Modifier
-          .padding(horizontal = 16.dp)
-          .padding(top = 16.dp)
-        ) {
-          TodoInputTextField(
-            text = text,
-            onTextChange = setText,
+    val enableTopSection = currentlyEditing == null
+    TodoItemInputBackground(elevate = enableTopSection) {
+      TodoItemInputBackground(elevate = enableTopSection) {
+        if (enableTopSection) {
+          TodoItemEntryInput(onAddItem)
+        } else {
+          Text(
+            text = "Editing item",
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-              .weight(1f)
-              .padding(end = 8.dp)
-          )
-          TodoEditButton(
-            onClick = {
-              onAddItem(TodoItem(text)) // send onItemComplete event up
-              setText("") // clear the internal text
-            },
-            text = "Add",
-            modifier = Modifier.align(Alignment.CenterVertically),
-            enabled = text.isNotBlank()
+              .align(Alignment.CenterVertically)
+              .padding(16.dp)
+              .fillMaxWidth()
           )
         }
       }
     }
-    LazyColumn(
-      modifier = Modifier.weight(1f),
-      contentPadding = PaddingValues(top = 8.dp)
-    ) {
-      items(items = items) {
+    val (text, setText) = remember { mutableStateOf("") }
+    Column {
+      Row(Modifier
+        .padding(horizontal = 16.dp)
+        .padding(top = 16.dp)
+      ) {
+        TodoInputTextField(
+          text = text,
+          onTextChange = setText,
+          modifier = Modifier
+            .weight(1f)
+            .padding(end = 8.dp)
+        )
+        TodoEditButton(
+          onClick = {
+            onAddItem(TodoItem(text)) // send onItemComplete event up
+            setText("") // clear the internal text
+          },
+          text = "Add",
+          modifier = Modifier.align(Alignment.CenterVertically),
+          enabled = text.isNotBlank()
+        )
+      }
+    }
+  }
+  LazyColumn(
+    contentPadding = PaddingValues(top = 8.dp)
+  ) {
+    items(items = items) { todo ->
+      if (currentlyEditing?.id == todo.id) {
+        TodoItemInlineEditor(
+          item = currentlyEditing,
+          onEditorItemChange = onEditItemChange,
+          onEditDone = { onEditDone },
+          onRemoveItem = { onRemoveItem(todo) }
+        )
+      } else {
         TodoRow(
-          todo = it,
+          todo = todo,
           onItemClicked = { onRemoveItem(it) },
           modifier = Modifier.fillParentMaxWidth()
         )
       }
     }
+  }
 
-    // For quick testing, a random item generator button
-    Button(
-      onClick = { onAddItem(generateRandomTodoItem()) },
-      modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth(),
-    ) {
-      Text("Add random item")
-    }
+  // For quick testing, a random item generator button
+  Button(
+    onClick = { onAddItem(generateRandomTodoItem()) },
+    modifier = Modifier
+      .padding(16.dp)
+      .fillMaxWidth(),
+  ) {
+    Text("Add random item")
   }
 }
+
 
 /**
  * Stateless composable that displays a full-width [TodoItem].
@@ -150,7 +181,8 @@ fun PreviewTodoScreen() {
     TodoItem("Apply state", TodoIcon.Done),
     TodoItem("Build dynamic UIs", TodoIcon.Square)
   )
-  TodoScreen(items, {}, {})
+  TodoScreen(items, null, {}, {}, {}, {}, {})
+
 }
 
 @Preview
@@ -198,7 +230,7 @@ fun TodoInputTextField(text: String, onTextChange: (String) -> Unit, modifier: M
 @Composable
 fun TodoItemEntryInput(onItemComplete: (TodoItem) -> Unit) {
   val (text, setText) = remember { mutableStateOf("") }
-  val (icon, setIcon) = remember { mutableStateOf(TodoIcon.Default)}
+  val (icon, setIcon) = remember { mutableStateOf(TodoIcon.Default) }
   val iconsVisible = text.isNotBlank()
   val submit = {
     onItemComplete(TodoItem(text, icon))
@@ -222,7 +254,7 @@ fun TodoItemInput(
   icon: TodoIcon,
   onIconChange: (TodoIcon) -> Unit,
   submit: () -> Unit,
-  iconsVisible: Boolean
+  iconsVisible: Boolean,
 ) {
   Column {
     Row(

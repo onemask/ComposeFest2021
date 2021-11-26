@@ -46,7 +46,26 @@ class TodoActivity : AppCompatActivity() {
 private fun TodoActivityScreen(todoViewModel: TodoViewModel) {
   TodoScreen(
     items = todoViewModel.todoItems,
+    currentlyEditing = todoViewModel.currentEditionItem,
     onAddItem = todoViewModel::addItem,
-    onRemoveItem = todoViewModel::removeItem
+    onRemoveItem = todoViewModel::removeItem,
+    onStartEdit = todoViewModel::onEditItemChange,
+    onEditItemChange = todoViewModel::onEditItemChange,
+    onEditDone = todoViewModel::onEditDone
   )
 }
+
+@Composable
+fun TodoItemInlineEditor(
+  item: TodoItem,
+  onEditorItemChange: (TodoItem) -> Unit,
+  onEditDone: () -> Unit,
+  onRemoveItem: () -> Unit,
+) = TodoItemInput(
+  text = item.task,
+  onTextChange = { onEditorItemChange(item.copy(task = it)) },
+  icon = item.icon,
+  onIconChange = { onEditorItemChange(item.copy(icon = it)) },
+  submit = { onEditDone },
+  iconsVisible = true
+)
