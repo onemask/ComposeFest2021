@@ -20,10 +20,18 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.codelabs.state.ui.StateCodelabTheme
 
 class TodoActivity : AppCompatActivity() {
@@ -67,5 +75,24 @@ fun TodoItemInlineEditor(
   icon = item.icon,
   onIconChange = { onEditorItemChange(item.copy(icon = it)) },
   submit = { onEditDone },
-  iconsVisible = true
+  iconsVisible = true,
+  buttonSlot = {
+    Row {
+      val shrinkButtons = Modifier.widthIn(20.dp)
+      TextButton(onClick = onEditDone, modifier = shrinkButtons) {
+        Text(
+          text = "\uD83D\uDCBE", // floppy disk
+          textAlign = TextAlign.End,
+          modifier = Modifier.width(30.dp)
+        )
+      }
+      TextButton(onClick = onRemoveItem, modifier = shrinkButtons) {
+        Text(
+          text = "❌",
+          textAlign = TextAlign.End,
+          modifier = Modifier.width(30.dp)
+        )
+      }
+    }
+  }
 )
