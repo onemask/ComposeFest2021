@@ -1,5 +1,6 @@
 package com.soo.sample.JetpackComposeLayout
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,6 +37,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -101,11 +104,18 @@ fun LayoutsCodelabPreview() {
   }
 }
 
-@Preview(showBackground = true)
+@Preview(
+  showBackground = true,
+  widthDp = 320,
+  uiMode = UI_MODE_NIGHT_YES,
+  name = "DefaultPreviewDark"
+)
+@Preview(showBackground = true, widthDp = 320)
 @Composable
 fun DefaultPreview() {
   JetpackComposeLayoutTheme {
-    Greeting("Android")
+    Greetings()
+
   }
 }
 
@@ -375,7 +385,7 @@ fun Greeting(name: String) {
         Text(text = name)
       }
       OutlinedButton(
-        onClick = { expanded = !expanded }
+        onClick = { expanded.value = !expanded.value }
       ) {
         Text(if (expanded.value) "Show less" else "Show more")
       }
