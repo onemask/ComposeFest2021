@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       JetpackComposeLayoutTheme {
-       // ScrollingList()
+        // ScrollingList()
         BodyContent()
       }
     }
@@ -359,7 +359,7 @@ fun MyApp() {
   Greetings()
   var shouldShowOnboarding by remember { mutableStateOf(true) }
 
-  if (shouldShowOnboarding){
+  if (shouldShowOnboarding) {
     OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
   } else {
     Greetings()
@@ -367,9 +367,9 @@ fun MyApp() {
 }
 
 @Composable
-private fun Greetings(names: List<String> = listOf("World", "Compose")) {
-  Column(modifier = Modifier.padding(vertical = 4.dp)) {
-    for (name in names) {
+private fun Greetings(names: List<String> = List(1000) { "$it" }) {
+  LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
+    items(items = names) { name ->
       Greeting(name = name)
     }
   }
