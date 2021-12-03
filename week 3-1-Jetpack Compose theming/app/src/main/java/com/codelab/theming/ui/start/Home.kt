@@ -48,9 +48,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.codelab.theming.R
 import com.codelab.theming.data.Post
 import com.codelab.theming.data.PostRepo
@@ -160,9 +163,19 @@ private fun PostMetadata(
   post: Post,
   modifier: Modifier = Modifier,
 ) {
+  val tagStyle = MaterialTheme.typography.overline.toSpanStyle().copy(
+    background = MaterialTheme.colors.primary.copy(alpha = 0.1f)
+  )
   val divider = "  •  "
   val tagDivider = "  "
   val text = buildAnnotatedString {
+    append("This is some unstyled text\n")
+    withStyle(SpanStyle(color = Color.Red)) {
+      append("Red text\n")
+    }
+    withStyle(SpanStyle(fontSize = 24.sp)) {
+      append("Large text")
+    }
     append(post.metadata.date)
     append(divider)
     append(stringResource(R.string.read_time, post.metadata.readTimeMinutes))
@@ -171,6 +184,7 @@ private fun PostMetadata(
       if (index != 0) {
         append(tagDivider)
       }
+      withStyle(tagStyle) {}
       append(" ${tag.uppercase(Locale.getDefault())} ")
     }
   }
@@ -209,7 +223,10 @@ fun PostItem(
 @Composable
 private fun PostItemPreview() {
   val post = remember { PostRepo.getFeaturedPost() }
-  Surface {
+  Surface(
+    color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f),
+    contentColor = MaterialTheme.colors.primary,
+  ) {
     PostItem(post = post)
   }
 }
