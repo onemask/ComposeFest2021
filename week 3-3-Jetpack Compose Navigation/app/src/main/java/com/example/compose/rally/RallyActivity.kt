@@ -76,14 +76,14 @@ fun RallyApp() {
 }
 
 @Composable
-private fun RallyNavHost(
+fun RallyNavHost(
   navController: NavHostController,
-  innerPadding: PaddingValues,
+  modifier: Modifier = Modifier,
 ) {
   NavHost(
     navController = navController,
     startDestination = RallyScreen.Overview.name,
-    modifier = Modifier.padding(innerPadding)
+    modifier = modifier,
   ) {
     composable(RallyScreen.Overview.name) {
       OverviewBody(
