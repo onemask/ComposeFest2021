@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -59,11 +61,30 @@ fun MyApp() {
 
 @Composable
 private fun Greeting(name: String) {
-  Card(
-    backgroundColor = MaterialTheme.colors.primary,
+  var expanded by remember { mutableStateOf(false) }
+
+  val extraPadding by animateDpAsState(
+    if (expanded) 48.dp else 0.dp
+  )
+  Surface(
+    color = MaterialTheme.colors.primary,
     modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
   ) {
-    CardContent(name)
+    Row(modifier = Modifier.padding(24.dp)) {
+      Column(modifier = Modifier
+        .weight(1f)
+        .padding(bottom = extraPadding)
+      ) {
+        Text(text = "Hello, ")
+        Text(text = name)
+      }
+      OutlinedButton(
+        onClick = { expanded = !expanded }
+      ) {
+        Text(if (expanded) "Show less" else "Show more")
+      }
+
+    }
   }
 }
 
