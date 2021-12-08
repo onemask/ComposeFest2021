@@ -474,7 +474,7 @@ fun Chip(modifier: Modifier = Modifier, text: String) {
 fun StaggeredGrid(
   modifier: Modifier = Modifier,
   rows: Int = 3,
-  content: @Composable () -> Unit
+  content: @Composable () -> Unit,
 ) {
   Layout(
     modifier = modifier,
@@ -491,6 +491,7 @@ fun ChipPreview() {
     Chip(text = "Hi there")
   }
 }
+
 @Composable
 fun ConstraintLayoutContent() {
   ConstraintLayout {
@@ -584,10 +585,44 @@ private fun decoupledConstraints(margin: Dp): ConstraintSet {
     val text = createRefFor("text")
 
     constrain(button) {
-      top.linkTo(parent.top, margin= margin)
+      top.linkTo(parent.top, margin = margin)
     }
     constrain(text) {
       top.linkTo(button.bottom, margin)
+    }
+  }
+}
+
+
+@Composable
+fun TwoTexts(modifier: Modifier = Modifier, text1: String, text2: String) {
+  Row(modifier = modifier) {
+    Text(
+      modifier = Modifier
+        .weight(1f)
+        .padding(start = 4.dp)
+        .wrapContentWidth(Alignment.Start),
+      text = text1
+    )
+
+    Divider(color = Color.Black, modifier = Modifier.fillMaxHeight().width(1.dp))
+    Text(
+      modifier = Modifier
+        .weight(1f)
+        .padding(end = 4.dp)
+        .wrapContentWidth(Alignment.End),
+
+      text = text2
+    )
+  }
+}
+
+@Preview
+@Composable
+fun TwoTextsPreview() {
+  LayoutsCodelabTheme {
+    Surface {
+      TwoTexts(text1 = "Hi", text2 = "there")
     }
   }
 }
