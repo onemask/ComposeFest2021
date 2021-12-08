@@ -364,11 +364,12 @@ fun TextWithNormalPaddingPreview() {
 
 @Composable
 fun BodyContent(modifier: Modifier = Modifier) {
-  MyOwnColumn(modifier.padding(8.dp)) {
-    Text("MyOwnColumn")
-    Text("places items")
-    Text("vertically.")
-    Text("We've done it by hand!")
+  Row(modifier = modifier.horizontalScroll(rememberScrollState())) {
+    StaggeredGrid {
+      for (topic in topics) {
+        Chip(modifier = Modifier.padding(8.dp), text = topic)
+      }
+    }
   }
 }
 
@@ -422,4 +423,71 @@ fun Greeting(name: String) {
     {
       CardContent(name)
     }
+}
+
+val topics = listOf(
+  "Arts & Crafts", "Beauty", "Books", "Business", "Comics", "Culinary",
+  "Design", "Fashion", "Film", "History", "Maths", "Music", "People", "Philosophy",
+  "Religion", "Social sciences", "Technology", "TV", "Writing"
+)
+
+
+@Composable
+fun BodyContent(modifier: Modifier = Modifier) {
+  StaggeredGrid(modifier = modifier) {
+    for (topic in topics) {
+      Chip(modifier = Modifier.padding(8.dp), text = topic)
+    }
+  }
+}
+
+@Preview
+@Composable
+fun LayoutsCodelabPreview() {
+  LayoutsCodelabTheme {
+    BodyContent()
+  }
+}
+
+@Composable
+fun Chip(modifier: Modifier = Modifier, text: String) {
+  Card(
+    modifier = modifier,
+    border = BorderStroke(color = Color.Black, width = Dp.Hairline),
+    shape = RoundedCornerShape(8.dp)
+  ) {
+    Row(
+      modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Box(
+        modifier = Modifier.size(16.dp, 16.dp)
+          .background(color = MaterialTheme.colors.secondary)
+      )
+      Spacer(Modifier.width(4.dp))
+      Text(text = text)
+    }
+  }
+}
+
+@Composable
+fun StaggeredGrid(
+  modifier: Modifier = Modifier,
+  rows: Int = 3,
+  content: @Composable () -> Unit
+) {
+  Layout(
+    modifier = modifier,
+    content = content
+  ) { measurables, constraints ->
+    // measure and position children given constraints logic here
+  }
+}
+
+@Preview
+@Composable
+fun ChipPreview() {
+  LayoutsCodelabTheme {
+    Chip(text = "Hi there")
+  }
 }
